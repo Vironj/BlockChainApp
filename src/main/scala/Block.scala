@@ -1,3 +1,1 @@
-case class Block(header: Header, payLoad: PayLoad){
-
-}
+case class Block(header: Header, payLoad: PayLoad)
