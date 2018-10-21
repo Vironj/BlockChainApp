@@ -1,4 +1,5 @@
 import Miner.NextBlock
+import akka.Main
 import akka.actor._
 
 class Miner extends Actor{
@@ -7,12 +8,14 @@ class Miner extends Actor{
   }
   override def receive= {
     case NextBlock => {
-      BlockChain ! NextBlock
+     context.actorSelection("/MainActor/BlockChain") ! NextBlock
     }
-    case
+    case None => sender() ! createGenisisBlock
+    case Block => sender() ! createNewBlock
   }
 
-  def createNewBlock: Unit = {}
+  def createNewBlock = {}
+  def createGenisisBlock ={}
 }
 
 object Miner {
