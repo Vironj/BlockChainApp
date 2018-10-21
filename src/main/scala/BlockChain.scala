@@ -1,4 +1,3 @@
-import Miner.NextBlock
 import akka.actor._
 
 class BlockChain extends Actor{
