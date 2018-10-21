@@ -1,3 +1,4 @@
+import BlockChain.NextBlock
 import akka.actor._
 
 class BlockChain extends Actor{
@@ -19,5 +20,9 @@ class BlockChain extends Actor{
       validate
       sender() ! BlockChain
   }
+}
+
+object BlockChain {
+  case class NextBlock()
 }
 
