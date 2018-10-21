@@ -8,17 +8,17 @@ class BlockChain extends Actor{
   }
 
   def validate: Unit = {
-    ???
+    for(i <- 0 until 100){???}
     addToBlockChain
   }
 
   override def receive = {
 
     case NextBlock => if (BlockChain.isEmpty) sender() ! None
-    else sender() ! BlockChain.get(1)
+    else sender() ! BlockChain
     case createNewblock =>
       validate
-      sender() ! BlockChain.get(1+1)
+      sender() ! BlockChain
   }
 }
 
