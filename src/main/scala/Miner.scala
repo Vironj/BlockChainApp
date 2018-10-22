@@ -3,24 +3,22 @@ import akka.actor._
 
 class Miner extends Actor{
   override def preStart(): Unit = {
-    self ! NextBlock
+    context.actorSelection("/MainActor/BlockChain") ! NextBlock
   }
   override def receive= {
-    case NextBlock => {
-     context.actorSelection("/MainActor/BlockChain") ! NextBlock
-    }
-    case None => sender() ! createGenisisBlock
-    case block: Block => sender() ! createNewBlock
+    case None => sender() ! createGenesisBlock
+    case BlockChain.NextBlock => sender() ! createNewBlock
   }
 
   def createNewBlock = {
     for(i <- 0 until 100){???}
   }
 }
-  def createGenisisBlock = {
+  def createGenesisBlock: Block = {
     val header = new Header(0,Array(0),1,0)
     val payLoad = new PayLoad(Seq(0))
     val genblock = new Block(header,payLoad)
+    genblock
   }
 
 

@@ -1,4 +1,4 @@
-import BlockChain.NextBlock
+import BlockChain.{NextBlock}
 import akka.actor._
 
 class BlockChain extends Actor{
@@ -7,7 +7,7 @@ class BlockChain extends Actor{
   def addToBlockChain: Unit = {
   }
 
-  def validate: Unit = {
+  def validate = {
     for(i <- 0 until 100){???}
     addToBlockChain
   }
@@ -15,14 +15,15 @@ class BlockChain extends Actor{
   override def receive = {
 
     case NextBlock => if (BlockChain.isEmpty) sender() ! None
-    else sender() ! BlockChain
-    case createNewblock =>
+    else sender() ! NextBlock(BlockChain(1))
+    case createGenesisBlock => {
       validate
-      sender() ! BlockChain
+      sender() ! NextBlock(BlockChain(1))
+    }
   }
 }
 
 object BlockChain {
-  case class NextBlock()
+  case class NextBlock(block: Block)
 }
 
