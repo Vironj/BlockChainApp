@@ -1,27 +1,38 @@
-import Miner.NextBlock
-import akka.actor._
 
-class Miner extends Actor{
+import Miner.{BlockRequest, NextBlock}
+import akka.actor.Actor
+import akka.util.ByteString
+
+class Miner extends Actor {
   override def preStart(): Unit = {
-    context.actorSelection("/MainActor/BlockChain") ! NextBlock
-  }
-  override def receive= {
-    case None => sender() ! createGenesisBlock
-    case BlockChain.NextBlock => sender() ! createNewBlock
+    context.actorSelection("/user/BlockChain") ! BlockRequest
   }
 
-  def createNewBlock = {
-    for(i <- 0 until 100){???}
+  override def receive = {
+    case NextBlock(block) => block match {
+      case Some(value) =>
+       val newBlock: Block = createNewBlock(value)
+        sender() ! NextBlock(Some(newBlock))
+      case None => sender() ! createGenesisBlock
+    }
+
   }
+
+  def createNewBlock(block: Block): Block = {
+    for (i <- 0 until 100) {
+      ???
+    }
+    block
+  }
+
+  def createGenesisBlock: Block = Block(Header(0, ByteString.empty, 1, System.currentTimeMillis()), Payload(Seq()))
+
 }
-  def createGenesisBlock: Block = {
-    val header = new Header(0,Array(0),1,0)
-    val payLoad = new PayLoad(Seq(0))
-    val genblock = new Block(header,payLoad)
-    genblock
-  }
-
 
 object Miner {
+
   case class NextBlock(block: Option[Block])
+
+  case object BlockRequest
+
 }
