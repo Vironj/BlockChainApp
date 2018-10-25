@@ -10,9 +10,10 @@ class BlockChain extends Actor {
     BlockChain += block.header.currentHeight -> block
   }
 
-  def validate(newBlock: Block) = {
+  def validate(newBlock: Block): Unit = {
     if (BlockChain.isEmpty) {
       addToBlockChain(newBlock); sender() ! NextBlock(Some(newBlock))
+    //println(BlockChain)
     } else {
       val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
       var hash: Array[Byte] =
@@ -27,7 +28,7 @@ class BlockChain extends Actor {
     }
   }
 
-  override def receive = {
+  override def receive: PartialFunction[Any, Unit] = {
 
     case BlockRequest =>
       if (BlockChain.isEmpty) sender() ! NextBlock(None) else sender() ! NextBlock(Some(BlockChain(1)))

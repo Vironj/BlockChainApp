@@ -9,7 +9,7 @@ class Miner extends Actor {
     context.actorSelection("/user/BlockChain") ! BlockRequest
   }
 
-  override def receive = {
+  override def receive: PartialFunction[Any, Unit] = {
     case NextBlock(block) => block match {
       case Some(value) =>
         val newBlock: Block = createNewBlock(value)
@@ -21,8 +21,10 @@ class Miner extends Actor {
   def createNewBlock(block: Block): Block = {
     val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
     var hash: Array[Byte] = digest.digest(block.header.nonce.toString.getBytes(StandardCharsets.UTF_8))
+   //println(hash)
     for (i <- 0 until 99) {
       hash = digest.digest(hash)
+      //println(hash)
     }
     val newBlock: Block =
       Block(Header(block.header.currentHeight + 1, Array.empty, 1, System.currentTimeMillis()), Payload(Seq()))
