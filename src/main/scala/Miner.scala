@@ -1,7 +1,7 @@
-
+import java.security.MessageDigest
 import Miner.{BlockRequest, NextBlock}
 import akka.actor.Actor
-import akka.util.ByteString
+import sun.nio.cs.UTF_8
 
 class Miner extends Actor {
   override def preStart(): Unit = {
@@ -11,21 +11,24 @@ class Miner extends Actor {
   override def receive = {
     case NextBlock(block) => block match {
       case Some(value) =>
-       val newBlock: Block = createNewBlock(value)
+        val newBlock: Block = createNewBlock(value)
         sender() ! NextBlock(Some(newBlock))
       case None => sender() ! createGenesisBlock
     }
-
   }
 
   def createNewBlock(block: Block): Block = {
-    for (i <- 0 until 100) {
-      ???
+    val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
+    var hash: Array[Byte] = digest.digest(block.header.nonce.toString.getBytes(UTF_8))
+    for (i <- 0 until 99) {
+      hash = digest.digest(hash)
     }
-    block
+    val newBlock: Block =
+      Block(Header(block.header.currentHeight + 1, Array.empty, 1, System.currentTimeMillis()), Payload(Seq()))
+    newBlock
   }
 
-  def createGenesisBlock: Block = Block(Header(0, ByteString.empty, 1, System.currentTimeMillis()), Payload(Seq()))
+  def createGenesisBlock: Block = Block(Header(0, Array.empty, 1, System.currentTimeMillis()), Payload(Seq()))
 
 }
 

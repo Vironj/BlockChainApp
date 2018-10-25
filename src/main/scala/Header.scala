@@ -1,3 +1,3 @@
 import akka.util.ByteString
 
-case class Header(currentHeight: Int, latestHash: ByteString, nonce: Long, timestamp : Long)
+case class Header(currentHeight: Int, latestHash: Array[Byte], nonce: Long, timestamp : Long)
