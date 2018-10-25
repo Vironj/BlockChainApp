@@ -1,24 +1,30 @@
+import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
-
 import Miner.{BlockRequest, NextBlock}
 import akka.actor._
-import sun.nio.cs.UTF_8
 
 class BlockChain extends Actor {
-  val BlockChain: Map[Int, Block] = Map.empty
+  var BlockChain: Map[Int, Block] = Map.empty
 
-  def addToBlockChain: Unit = {
+  def addToBlockChain(block: Block): Unit = {
+    BlockChain += block.header.currentHeight -> block
   }
 
-  def validate(block: Block) = {
-    val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
-    var hash: Array[Byte] = digest.digest(block.header.nonce.toString.getBytes(UTF_8))
-    for (i <- 0 until 99) {
-      hash = digest.digest(hash)
+  def validate(newBlock: Block) = {
+    if (BlockChain.isEmpty) {
+      addToBlockChain(newBlock); sender() ! NextBlock(Some(newBlock))
+    } else {
+      val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
+      var hash: Array[Byte] =
+        digest.digest(BlockChain(newBlock.header.currentHeight - 1).header.nonce.toString.getBytes(StandardCharsets.UTF_8))
+      for (i <- 0 until 99) {
+        hash = digest.digest(hash)
+      }
+      if (hash sameElements BlockChain(newBlock.header.currentHeight).header.latestHash) {
+        addToBlockChain(newBlock); sender() ! NextBlock(Some(newBlock))
+      }
+      else  sender() ! NextBlock(Some(BlockChain(newBlock.header.currentHeight-1)))
     }
-    addToBlockChain
-    //if ( validate == false ) last block from BlockChain else
-    sender() ! NextBlock(Some(block))
   }
 
   override def receive = {
@@ -31,7 +37,6 @@ class BlockChain extends Actor {
 }
 
 object BlockChain {
-
 
 
 }

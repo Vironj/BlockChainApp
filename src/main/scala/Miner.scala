@@ -1,7 +1,8 @@
+import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import Miner.{BlockRequest, NextBlock}
 import akka.actor.Actor
-import sun.nio.cs.UTF_8
+
 
 class Miner extends Actor {
   override def preStart(): Unit = {
@@ -19,7 +20,7 @@ class Miner extends Actor {
 
   def createNewBlock(block: Block): Block = {
     val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
-    var hash: Array[Byte] = digest.digest(block.header.nonce.toString.getBytes(UTF_8))
+    var hash: Array[Byte] = digest.digest(block.header.nonce.toString.getBytes(StandardCharsets.UTF_8))
     for (i <- 0 until 99) {
       hash = digest.digest(hash)
     }
