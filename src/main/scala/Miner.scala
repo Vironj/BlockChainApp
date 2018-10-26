@@ -19,7 +19,7 @@ class Miner extends Actor {
 
   def createNewBlock(block: Block): Block = {
     val newBlock: Block =
-      Block(Header(block.header.currentHeight + 1, sha256(block), 1, System.currentTimeMillis()), Payload(Seq()))
+      Block(Header(block.header.currentHeight + 1, sha256(block), block.header.nonce+1, System.currentTimeMillis()), Payload(Seq()))
     context.actorSelection("/user/BlockChain") ! newBlock
     newBlock
   }

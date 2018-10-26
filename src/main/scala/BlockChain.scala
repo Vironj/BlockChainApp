@@ -17,8 +17,7 @@ class BlockChain extends Actor {
     if (blockChain.isEmpty) {
       addToBlockChain(newBlock); sender() ! NextBlock(Some(newBlock))
     } else {
-      if (sha256(newBlock) sameElements newBlock.header.latestHash) {
-        //newBlock.header.latestHash = blockChain(newBlock.header.currentHeight-1).header.latestHash
+      if (sha256(blockChain(newBlock.header.currentHeight-1)) sameElements newBlock.header.latestHash) {
         addToBlockChain(newBlock); sender() ! NextBlock(Some(newBlock))
       }
       else  sender() ! NextBlock(Some(blockChain(newBlock.header.currentHeight-1)))
@@ -39,7 +38,7 @@ object BlockChain {
     val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
     var hash: Array[Byte] = digest.digest(block.header.nonce.toString.getBytes(StandardCharsets.UTF_8))
     for (i <- 0 until 99) hash = digest.digest(hash)
+    println(hash)
     hash
   }
 }
-
