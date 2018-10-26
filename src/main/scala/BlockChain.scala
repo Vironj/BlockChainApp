@@ -37,11 +37,8 @@ class BlockChain extends Actor {
 object BlockChain {
   def sha256(block: Block): Array[Byte] = {
     val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
-    var hash: Array[Byte] =
-      digest.digest(block.header.nonce.toString.getBytes(StandardCharsets.UTF_8))
-    for (i <- 0 until 99) {
-      hash = digest.digest(hash)
-    }
+    var hash: Array[Byte] = digest.digest(block.header.nonce.toString.getBytes(StandardCharsets.UTF_8))
+    for (i <- 0 until 99) hash = digest.digest(hash)
     hash
   }
 }
