@@ -1,7 +1,6 @@
-import java.nio.charset.StandardCharsets
-import java.security.MessageDigest
 import Miner.{BlockRequest, NextBlock}
-import akka.actor.Actor
+import akka.actor._
+import BlockChain.sha256
 
 
 class Miner extends Actor {
@@ -19,19 +18,13 @@ class Miner extends Actor {
   }
 
   def createNewBlock(block: Block): Block = {
-    val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
-    var hash: Array[Byte] = digest.digest(block.header.nonce.toString.getBytes(StandardCharsets.UTF_8))
-   //println(hash)
-    for (i <- 0 until 99) {
-      hash = digest.digest(hash)
-      //println(hash)
-    }
     val newBlock: Block =
-      Block(Header(block.header.currentHeight + 1, Array.empty, 1, System.currentTimeMillis()), Payload(Seq()))
+      Block(Header(block.header.currentHeight + 1, sha256(block), 1, System.currentTimeMillis()), Payload(Seq()))
+    context.actorSelection("/user/BlockChain") ! newBlock
     newBlock
   }
 
-  def createGenesisBlock: Block = Block(Header(0, Array.empty, 1, System.currentTimeMillis()), Payload(Seq()))
+  def createGenesisBlock: Block = Block(Header(0, Array(0), 1, System.currentTimeMillis()), Payload(Seq()))
 
 }
 
