@@ -1,1 +1,1 @@
-case class PayLoad(Seq: Seq[Int])
+case class Payload(Seq: Seq[Int])
